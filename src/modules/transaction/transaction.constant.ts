@@ -1,0 +1,10 @@
+export enum TRANSACTION_TYPE {
+  INCOME = 1,
+  EXPENSE = 2,
+}
+
+export enum TRANSACTION_STATUS {
+  PENDING = 1,
+  CREATED = 2,
+  CANCELLED = 3,
+}

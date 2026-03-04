@@ -16,7 +16,7 @@ export const authService = {
       throw new AppError('Invalid email or password', 401)
     }
 
-    const payload = { sub: user.id, email: user.email, role: user.role }
+    const payload = { sub: user.id, email: user.email, role: user.role, organizationId: user.organizationId }
     const accessToken = signAccessToken(payload)
     const refreshToken = signRefreshToken({ sub: user.id })
 
@@ -39,7 +39,7 @@ export const authService = {
       const user = await authRepository.findUserByEmail(storedToken.userId)
       if (!user) throw new AppError('User not found', 401)
 
-      const accessToken = signAccessToken({ sub: user.id, email: user.email, role: user.role })
+      const accessToken = signAccessToken({ sub: user.id, email: user.email, role: user.role, organizationId: user.organizationId })
       return { accessToken }
     } catch {
       throw new AppError('Invalid or expired refresh token', 401)

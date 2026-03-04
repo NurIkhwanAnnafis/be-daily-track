@@ -15,7 +15,7 @@ export async function categoryController(app: FastifyInstance) {
         throw new AppError(result.error.issues[0].message, 400)
       }
 
-      const categories = await categoryService.getCategories(result.data)
+      const categories = await categoryService.getCategories(result.data, req.user)
       return reply.status(200).send(paginatedResponse(categories.data, categories.meta.total, categories.meta.page, categories.meta.limit))
     })
 

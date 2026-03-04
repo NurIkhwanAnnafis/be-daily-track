@@ -1,11 +1,14 @@
 import { AppError } from "../../shared/errors/app-error"
+import { JwtPayload } from "../../shared/utils/jwt"
 import { categoryRepository } from "./category.repository"
 import { CreateCategoryInput, GetCategoryInput, UpdateCategoryInput } from "./category.schema"
 
 export const categoryService = {
-  async getCategories(params: GetCategoryInput) {
-    const categories = await categoryRepository.find(params)
-    const total = await categoryRepository.count(params.search)
+  async getCategories(params: GetCategoryInput, user: JwtPayload) {
+    const [categories, total] = await Promise.all([
+      categoryRepository.find(params, user),
+      categoryRepository.count(user, params.search)
+    ])
     return { data: categories, meta: { total, page: params.page, limit: params.limit } }
   },
 
