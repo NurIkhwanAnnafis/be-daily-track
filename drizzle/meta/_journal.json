@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1771946231222,
+      "tag": "0000_fat_angel",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1772509294965,
+      "tag": "0001_bent_wrecking_crew",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1772530111070,
+      "tag": "0002_charming_texas_twister",
+      "breakpoints": true
+    }
+  ]
+}
