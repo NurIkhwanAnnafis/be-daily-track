@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "saas-backend",
   "version": "1.0.0",
   "private": true,
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "tsup",
     "start": "node dist/server.js",
     "lint": "eslint .",
     "test": "vitest",
@@ -41,8 +41,10 @@
     "@types/pg": "^8.16.0",
     "drizzle-kit": "^0.31.9",
     "eslint": "^10.0.2",
+    "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   }
 }
+
