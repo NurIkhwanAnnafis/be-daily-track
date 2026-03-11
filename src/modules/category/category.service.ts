@@ -12,13 +12,13 @@ export const categoryService = {
     return { data: categories, meta: { total, page: params.page, limit: params.limit } }
   },
 
-  async createCategory(data: CreateCategoryInput) {
+  async createCategory(data: CreateCategoryInput, user: JwtPayload) {
     const existCategory = await categoryRepository.findByName(data.name)
     if (existCategory) {
       throw new AppError('Category already exists', 400)
     }
 
-    const category = await categoryRepository.create(data)
+    const category = await categoryRepository.create(data, user)
     return category
   },
 

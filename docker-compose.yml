@@ -1,0 +1,9 @@
+services:
+  app:
+    image: be-daily-track:latest
+    container_name: be-daily-track
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    restart: unless-stopped

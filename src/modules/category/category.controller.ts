@@ -25,7 +25,7 @@ export async function categoryController(app: FastifyInstance) {
         throw new AppError(result.error.issues[0].message, 400)
       }
 
-      const category = await categoryService.createCategory(result.data)
+      const category = await categoryService.createCategory(result.data, req.user)
       return reply.status(201).send(category)
     })
 

@@ -3,8 +3,7 @@ import { paginationSchema } from '../../shared/module/schema'
 
 export const createCategorySchema = z.object({
   name: z.string().min(1),
-  organization_id: z.uuid(),
-  type_id: z.uuid()
+  type_id: z.number()
 })
 
 export const updateCategorySchema = z.object({
@@ -12,7 +11,7 @@ export const updateCategorySchema = z.object({
 })
 
 export const getCategorySchema = paginationSchema.extend({
-  type_id: z.uuid().optional()
+  type_id: z.coerce.number().optional()
 })
 
 export const getCategoryIdSchema = z.object({

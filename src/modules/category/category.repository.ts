@@ -44,10 +44,10 @@ export const categoryRepository = {
     })
   },
 
-  create(data: CreateCategoryInput) {
+  create(data: CreateCategoryInput, user: JwtPayload) {
     return db.insert(categories).values({
       name: data.name,
-      organizationId: data.organization_id,
+      organizationId: user.organizationId,
       typeId: data.type_id,
     }).returning({ id: categories.id })
   },

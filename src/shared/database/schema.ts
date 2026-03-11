@@ -71,7 +71,7 @@ export const refreshTokens = pgTable('refresh_tokens', {
 ])
 
 export const categoryType = pgTable('category_type', {
-  id: uuid('id').defaultRandom().primaryKey(),
+  id: integer('id').primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }),
@@ -82,7 +82,7 @@ export const categories = pgTable('categories', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
   organizationId: uuid('organization_id').notNull().references(() => organizations.id),
-  typeId: uuid('type_id').notNull().references(() => categoryType.id),
+  typeId: integer('type_id').notNull().references(() => categoryType.id),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }),
   deletedAt: timestamp('deleted_at', { withTimezone: true })

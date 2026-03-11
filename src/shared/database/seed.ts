@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { db } from '.'
-import { transactionStatus } from './schema'
+import { categoryType, transactionStatus } from './schema'
 
 async function seed() {
   console.log('🌱 Seeding database...')
@@ -12,6 +12,14 @@ async function seed() {
       { id: 0, name: 'pending' },
       { id: 1, name: 'created' },
       { id: 2, name: 'cancelled' },
+    ])
+    .onConflictDoNothing()
+
+  await db
+    .insert(categoryType)
+    .values([
+      { id: 1, name: 'income' },
+      { id: 2, name: 'expense' },
     ])
     .onConflictDoNothing()
 

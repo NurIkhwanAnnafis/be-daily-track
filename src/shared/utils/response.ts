@@ -19,7 +19,7 @@ export function paginatedResponse<T>(
       total,
       page,
       limit,
-      totalPages: Math.ceil(total / limit),
+      total_pages: Math.ceil(total / limit),
     },
   }
 }

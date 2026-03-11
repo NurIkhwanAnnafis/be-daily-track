@@ -8,12 +8,12 @@ export const authService = {
   async login(input: LoginInput) {
     const user = await authRepository.findUserByEmail(input.email)
     if (!user || !user.isActive) {
-      throw new AppError('Invalid email or password', 401)
+      throw new AppError('Invalid email or password', 400)
     }
 
     const isPasswordValid = await bcrypt.compare(input.password, user.passwordHash)
     if (!isPasswordValid) {
-      throw new AppError('Invalid email or password', 401)
+      throw new AppError('Invalid email or password', 400)
     }
 
     const payload = { sub: user.id, email: user.email, role: user.role, organizationId: user.organizationId }

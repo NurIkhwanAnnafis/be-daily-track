@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "saas-backend",
   "version": "1.0.0",
   "private": true,
@@ -15,7 +15,7 @@
     "test:watch": "vitest --watch",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:seed": "tsx src/shared/database/seed.ts",
+    "db:seed": "node --import tsx/esm src/shared/database/seed.ts",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
@@ -42,10 +42,8 @@
     "@types/pg": "^8.16.0",
     "drizzle-kit": "^0.31.9",
     "eslint": "^10.0.2",
-
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   }
 }
-

@@ -8,6 +8,7 @@ import { userController } from './modules/user/user.controller'
 import { authController } from './modules/auth/auth.controller'
 import { organizationController } from './modules/organization/organization.controller'
 import { categoryController } from './modules/category/category.controller'
+import { categoryTypeController } from './modules/category-type/category-type.controller'
 
 export async function buildApp() {
   const app = Fastify({
@@ -19,7 +20,8 @@ export async function buildApp() {
   // Security & utility plugins
   await app.register(helmet)
   await app.register(cors, {
-    origin: env.NODE_ENV === 'production' ? false : true,
+    // origin: env.NODE_ENV === 'production' ? false : true,
+    origin: '*',
   })
   await app.register(rateLimit, {
     max: 100,
@@ -36,6 +38,7 @@ export async function buildApp() {
       await v1.register(userController)
       await v1.register(organizationController)
       await v1.register(categoryController)
+      await v1.register(categoryTypeController)
     },
     { prefix: '/api/v1' }
   )
