@@ -1,16 +1,16 @@
 import { and, count, eq, ilike, or } from "drizzle-orm"
-import { db } from "../../../shared/database"
-import { CreateIncomeInput, GetIncomeInput } from "./income.schema"
-import { transactions } from "../../../shared/database/schema"
-import { JwtPayload } from "../../../shared/utils/jwt"
-import { TRANSACTION_STATUS, TRANSACTION_TYPE } from "../transaction.constant"
+import { db } from "../../shared/database"
+import { JwtPayload } from "../../shared/utils/jwt"
+import { transactions } from "../../shared/database/schema"
+import { TRANSACTION_STATUS } from "./transaction.constant"
+import { CreateTransactionInput, GetTransactionInput } from "./transaction.schema"
 
-export const incomeRepository = {
-  find(params: GetIncomeInput, user: JwtPayload) {
+export const transactionRepository = {
+  find(params: GetTransactionInput, typeId: number, user: JwtPayload) {
     return db.query.transactions.findMany({
       where: and(
         eq(transactions.userId, user.sub),
-        params.typeId ? eq(transactions.typeId, Number(params.typeId)) : undefined,
+        eq(transactions.typeId, typeId),
         params.statusId ? eq(transactions.statusId, Number(params.statusId)) : undefined,
         params.date ? eq(transactions.date, new Date(params.date)) : undefined,
         params.search ?
@@ -90,13 +90,13 @@ export const incomeRepository = {
     })
   },
 
-  async count(params: GetIncomeInput, user: JwtPayload) {
+  async count(params: GetTransactionInput, typeId: number, user: JwtPayload) {
     const result = await db
       .select({ value: count() })
       .from(transactions)
       .where(and(
         eq(transactions.userId, user.sub),
-        params.typeId ? eq(transactions.typeId, Number(params.typeId)) : undefined,
+        eq(transactions.typeId, typeId),
         params.statusId ? eq(transactions.statusId, Number(params.statusId)) : undefined,
         params.date ? eq(transactions.date, new Date(params.date)) : undefined,
         params.search ?
@@ -111,11 +111,11 @@ export const incomeRepository = {
     return result[0].value
   },
 
-  create(data: CreateIncomeInput, user: JwtPayload) {
+  create(data: CreateTransactionInput, typeId: number, user: JwtPayload) {
     return db.insert(transactions).values({
       ...data,
       statusId: TRANSACTION_STATUS.CREATED,
-      typeId: TRANSACTION_TYPE.INCOME,
+      typeId,
       userId: user.sub,
       date: new Date(data.date),
     }).returning({ id: transactions.id })

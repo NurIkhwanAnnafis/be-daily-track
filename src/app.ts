@@ -9,6 +9,8 @@ import { authController } from './modules/auth/auth.controller'
 import { organizationController } from './modules/organization/organization.controller'
 import { categoryController } from './modules/category/category.controller'
 import { categoryTypeController } from './modules/category-type/category-type.controller'
+import { incomeController } from './modules/transaction/income/income.controller'
+import { expenseController } from './modules/transaction/expense/expense.controller'
 
 export async function buildApp() {
   const app = Fastify({
@@ -39,6 +41,8 @@ export async function buildApp() {
       await v1.register(organizationController)
       await v1.register(categoryController)
       await v1.register(categoryTypeController)
+      await v1.register(incomeController)
+      await v1.register(expenseController)
     },
     { prefix: '/api/v1' }
   )
