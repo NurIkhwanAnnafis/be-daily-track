@@ -1,6 +1,6 @@
 import { and, count, ilike, inArray, isNull } from "drizzle-orm";
 import { db } from "../../shared/database";
-import { GetCategoryTypeInput } from "./category-type.schema";
+import { GetAllCategoryTypeInput, GetCategoryTypeInput } from "./category-type.schema";
 import { categoryType } from "../../shared/database/schema";
 
 export const categoryTypeRepository = {
@@ -14,6 +14,24 @@ export const categoryTypeRepository = {
     })
   },
   find(params: GetCategoryTypeInput) {
+    return db.query.categoryType.findMany({
+      limit: params.limit,
+      offset: (params.page - 1) * params.limit,
+      orderBy: (table, { desc }) => [desc(table.createdAt)],
+      where: and(
+        params.search ? ilike(categoryType.name, `%${params.search}%`) : undefined,
+        isNull(categoryType.deletedAt),
+      ),
+      columns: {
+        id: true,
+        name: true,
+        createdAt: true,
+        updatedAt: true,
+      }
+    })
+  },
+
+  findAll(params: GetAllCategoryTypeInput) {
     return db.query.categoryType.findMany({
       where: and(
         params.search ? ilike(categoryType.name, `%${params.search}%`) : undefined,
