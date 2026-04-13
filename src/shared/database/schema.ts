@@ -11,7 +11,8 @@ import {
   index,
   jsonb,
   integer,
-  decimal
+  decimal,
+  primaryKey
 } from 'drizzle-orm/pg-core'
 
 export const userRoleEnum = pgEnum("user_role", [
@@ -82,13 +83,20 @@ export const categories = pgTable('categories', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
   organizationId: uuid('organization_id').notNull().references(() => organizations.id),
-  typeId: integer('type_id').notNull().references(() => categoryType.id),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }),
   deletedAt: timestamp('deleted_at', { withTimezone: true })
 }, (table) => [
   index('categories_org_index').on(table.organizationId),
-  index('categories_type_index').on(table.typeId)
+])
+
+export const categoryCategories = pgTable('category_category_type', {
+  categoryId: uuid('category_id').notNull().references(() => categories.id, { onDelete: 'cascade' }),
+  typeId: integer('type_id').notNull().references(() => categoryType.id, { onDelete: 'cascade' }),
+}, (table) => [
+  primaryKey({ columns: [table.categoryId, table.typeId] }),
+  index('category_category_type_category_index').on(table.categoryId),
+  index('category_category_type_type_index').on(table.typeId),
 ])
 
 export const transactionStatus = pgTable('transaction_status', {
@@ -134,7 +142,7 @@ export const organizationsRelations = relations(organizations, ({ many }) => ({
 }))
 
 export const categoryTypeRelations = relations(categoryType, ({ many }) => ({
-  categories: many(categories),
+  categoryCategories: many(categoryCategories),
 }))
 
 export const transactionStatusRelations = relations(transactionStatus, ({ many }) => ({
@@ -164,13 +172,21 @@ export const transactionsRelations = relations(transactions, ({ one }) => ({
   }),
 }))
 
-export const categoriesRelations = relations(categories, ({ one }) => ({
+export const categoriesRelations = relations(categories, ({ one, many }) => ({
   organization: one(organizations, {
     fields: [categories.organizationId],
     references: [organizations.id],
   }),
-  category: one(categoryType, {
-    fields: [categories.typeId],
+  categoryTypes: many(categoryCategories),
+}))
+
+export const categoryCategoriesRelations = relations(categoryCategories, ({ one }) => ({
+  category: one(categories, {
+    fields: [categoryCategories.categoryId],
+    references: [categories.id],
+  }),
+  categoryType: one(categoryType, {
+    fields: [categoryCategories.typeId],
     references: [categoryType.id],
   }),
 }))

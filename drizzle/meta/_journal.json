@@ -36,6 +36,20 @@
       "when": 1773208456875,
       "tag": "0004_overjoyed_calypso",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1775096393459,
+      "tag": "0005_soft_medusa",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1775096917187,
+      "tag": "0006_fantastic_lord_hawal",
+      "breakpoints": true
     }
   ]
 }
