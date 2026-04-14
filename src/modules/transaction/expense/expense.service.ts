@@ -1,7 +1,11 @@
 import { JwtPayload } from "../../../shared/utils/jwt"
 import { transactionRepository } from "../transaction.reposistory"
-import { CreateTransactionInput, GetTransactionInput } from "../transaction.schema"
+import { CreateTransactionInput, GetTransactionInput, UpdateTransactionInput } from "../transaction.schema"
 import { TRANSACTION_TYPE } from "../transaction.constant"
+import { isValidFormatDate } from "../../../shared/utils/date"
+import { AppError } from "../../../shared/errors/app-error"
+import { categoryRepository } from "../../category/category.repository"
+import { keysToSnakeCase } from "../../../shared/utils/object"
 
 export const expenseService = {
   async getExpenses(params: GetTransactionInput, user: JwtPayload) {
@@ -9,11 +13,53 @@ export const expenseService = {
       transactionRepository.find(params, TRANSACTION_TYPE.EXPENSE, user),
       transactionRepository.count(params, TRANSACTION_TYPE.EXPENSE, user)
     ])
-    return { data: expenses, meta: { total, page: params.page, limit: params.limit } }
+    const data = expenses.map(expense => ({
+      ...keysToSnakeCase(expense),
+      amount: Number(expense.amount),
+    }))
+
+    return { data, meta: { total, page: params.page, limit: params.limit } }
   },
 
   async createExpense(data: CreateTransactionInput, user: JwtPayload) {
-    return transactionRepository.create(data, TRANSACTION_TYPE.EXPENSE, user)
+    if (!isValidFormatDate(data.date)) {
+      throw new AppError("Invalid date format", 400);
+    }
+
+    const category = await categoryRepository.findById(data.category_id)
+    if (!category) {
+      throw new AppError("Category not found", 404)
+    }
+
+    if (!category.categoryTypes.find(t => t.typeId === TRANSACTION_TYPE.EXPENSE)) {
+      throw new AppError("Category type is not expense", 400)
+    }
+
+    const expense = await transactionRepository.create(data, TRANSACTION_TYPE.EXPENSE, user)
+    return keysToSnakeCase(expense[0])
+  },
+
+  async updateExpense(id: string, data: UpdateTransactionInput) {
+    if (!isValidFormatDate(data.date)) {
+      throw new AppError("Invalid date format", 400);
+    }
+
+    const expenseExist = await transactionRepository.findById(id)
+    if (!expenseExist) {
+      throw new AppError("Expense not found", 404)
+    }
+
+    const category = await categoryRepository.findById(data.category_id)
+    if (!category) {
+      throw new AppError("Category not found", 404)
+    }
+
+    if (!category.categoryTypes.find(t => t.typeId === TRANSACTION_TYPE.EXPENSE)) {
+      throw new AppError("Category type is not expense", 400)
+    }
+
+    const expense = await transactionRepository.update(id, data)
+    return keysToSnakeCase(expense[0])
   },
 
   async updateStatusExpense(id: string, statusId: number) {

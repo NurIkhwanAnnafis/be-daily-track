@@ -3,7 +3,7 @@ import { db } from "../../shared/database"
 import { JwtPayload } from "../../shared/utils/jwt"
 import { transactions } from "../../shared/database/schema"
 import { TRANSACTION_STATUS } from "./transaction.constant"
-import { CreateTransactionInput, GetTransactionInput } from "./transaction.schema"
+import { CreateTransactionInput, GetTransactionInput, UpdateTransactionInput } from "./transaction.schema"
 
 export const transactionRepository = {
   find(params: GetTransactionInput, typeId: number, user: JwtPayload) {
@@ -17,12 +17,11 @@ export const transactionRepository = {
           or(
             ilike(transactions.merchantName, `%${params.search}%`),
             ilike(transactions.description, `%${params.search}%`),
-            ilike(transactions.amount, `%${params.search}%`),
           ) : undefined,
       ),
       limit: params.limit,
       offset: (params.page - 1) * params.limit,
-      orderBy: (transactions, { desc }) => [desc(transactions.createdAt)],
+      orderBy: (table, { desc }) => [desc(table.createdAt)],
       columns: {
         id: true,
         amount: true,
@@ -113,12 +112,25 @@ export const transactionRepository = {
 
   create(data: CreateTransactionInput, typeId: number, user: JwtPayload) {
     return db.insert(transactions).values({
-      ...data,
+      amount: String(data.amount),
       statusId: TRANSACTION_STATUS.CREATED,
       typeId,
       userId: user.sub,
       date: new Date(data.date),
+      merchantName: data.merchant_name,
+      categoryId: data.category_id,
     }).returning({ id: transactions.id })
+  },
+
+  update(id: string, data: UpdateTransactionInput) {
+    return db.update(transactions).set({
+      amount: String(data.amount),
+      date: new Date(data.date),
+      merchantName: data.merchant_name,
+      categoryId: data.category_id,
+      description: data.description,
+      updatedAt: new Date(),
+    }).where(eq(transactions.id, id)).returning({ id: transactions.id })
   },
 
   updateStatus(id: string, statusId: number) {
