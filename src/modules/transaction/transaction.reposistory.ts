@@ -27,7 +27,6 @@ export const transactionRepository = {
         amount: true,
         date: true,
         description: true,
-        statusId: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -119,6 +118,8 @@ export const transactionRepository = {
       date: new Date(data.date),
       merchantName: data.merchant_name,
       categoryId: data.category_id,
+      description: data.description,
+      createdAt: new Date(),
     }).returning({ id: transactions.id })
   },
 

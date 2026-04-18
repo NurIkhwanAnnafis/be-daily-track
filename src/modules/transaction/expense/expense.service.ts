@@ -6,6 +6,7 @@ import { isValidFormatDate } from "../../../shared/utils/date"
 import { AppError } from "../../../shared/errors/app-error"
 import { categoryRepository } from "../../category/category.repository"
 import { keysToSnakeCase } from "../../../shared/utils/object"
+import { statusRepository } from "../status/status.repository"
 
 export const expenseService = {
   async getExpenses(params: GetTransactionInput, user: JwtPayload) {
@@ -40,13 +41,13 @@ export const expenseService = {
   },
 
   async updateExpense(id: string, data: UpdateTransactionInput) {
-    if (!isValidFormatDate(data.date)) {
-      throw new AppError("Invalid date format", 400);
-    }
-
     const expenseExist = await transactionRepository.findById(id)
     if (!expenseExist) {
       throw new AppError("Expense not found", 404)
+    }
+
+    if (!isValidFormatDate(data.date)) {
+      throw new AppError("Invalid date format", 400);
     }
 
     const category = await categoryRepository.findById(data.category_id)
@@ -63,10 +64,27 @@ export const expenseService = {
   },
 
   async updateStatusExpense(id: string, statusId: number) {
-    return transactionRepository.updateStatus(id, statusId)
+    const expenseExist = await transactionRepository.findById(id)
+    if (!expenseExist) {
+      throw new AppError("Expense not found", 404)
+    }
+
+    const statusExist = await statusRepository.findById(statusId)
+    if (!statusExist) {
+      throw new AppError("Status not found", 404)
+    }
+
+    const expense = await transactionRepository.updateStatus(id, statusId)
+    return keysToSnakeCase(expense[0])
   },
 
   async deleteExpense(id: string) {
-    return transactionRepository.delete(id)
+    const expenseExist = await transactionRepository.findById(id)
+    if (!expenseExist) {
+      throw new AppError("Expense not found", 404)
+    }
+
+    const expense = await transactionRepository.delete(id)
+    return expense
   }
 }

@@ -2,8 +2,10 @@ import { FastifyInstance } from "fastify";
 import {
   createTransactionSchema,
   deleteTransactionSchema,
+  getTransactionIdSchema,
   getTransactionSchema,
   updateStatusTransactionSchema,
+  updateTransactionSchema,
 } from "../transaction.schema";
 import { AppError } from "../../../shared/errors/app-error";
 import { incomeService } from "../income/income.service";
@@ -43,6 +45,21 @@ export const incomeController = async (app: FastifyInstance) => {
       return reply.status(201).send(income);
     });
 
+    protected_.put("/incomes/:id", async (request, reply) => {
+      const paramsResult = getTransactionIdSchema.safeParse(request.params)
+      if (!paramsResult.success) {
+        throw new AppError(paramsResult.error.issues[0].message, 400)
+      }
+
+      const result = updateTransactionSchema.safeParse(request.body)
+      if (!result.success) {
+        throw new AppError(result.error.issues[0].message, 400)
+      }
+
+      const income = await incomeService.updateIncome(paramsResult.data.id, result.data)
+      return reply.status(200).send(income)
+    })
+
     // PATCH /incomes/:id/status
     protected_.patch(
       "/incomes/:id/status",
@@ -51,7 +68,7 @@ export const incomeController = async (app: FastifyInstance) => {
         if (!result.success) {
           throw new AppError(result.error.issues[0].message, 400);
         }
-        await incomeService.updateStatusIncome(result.data.id, Number(result.data.statusId));
+        await incomeService.updateStatusIncome(result.data.id, Number(result.data.status_id));
         return reply.status(200).send({ message: "Status updated" });
       }
     );
