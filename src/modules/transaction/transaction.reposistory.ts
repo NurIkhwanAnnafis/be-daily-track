@@ -25,6 +25,7 @@ export const transactionRepository = {
       orderBy: (table, { desc }) => [desc(table.createdAt)],
       columns: {
         id: true,
+        merchantName: true,
         amount: true,
         date: true,
         description: true,
@@ -59,6 +60,7 @@ export const transactionRepository = {
       where: eq(transactions.id, id),
       columns: {
         id: true,
+        merchantName: true,
         amount: true,
         date: true,
         description: true,
@@ -98,6 +100,7 @@ export const transactionRepository = {
         eq(transactions.typeId, typeId),
         params.statusId ? eq(transactions.statusId, Number(params.statusId)) : undefined,
         params.date ? sql`DATE(${transactions.date}) = ${params.date}` : undefined,
+        params.categoryId ? eq(transactions.categoryId, params.categoryId) : undefined,
         params.search ?
           or(
             ilike(transactions.merchantName, `%${params.search}%`),
