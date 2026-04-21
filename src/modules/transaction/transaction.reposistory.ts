@@ -1,4 +1,4 @@
-import { and, count, eq, ilike, or } from "drizzle-orm"
+import { and, count, eq, ilike, or, sql } from "drizzle-orm"
 import { db } from "../../shared/database"
 import { JwtPayload } from "../../shared/utils/jwt"
 import { transactions } from "../../shared/database/schema"
@@ -12,7 +12,8 @@ export const transactionRepository = {
         eq(transactions.userId, user.sub),
         eq(transactions.typeId, typeId),
         params.statusId ? eq(transactions.statusId, Number(params.statusId)) : undefined,
-        params.date ? eq(transactions.date, new Date(params.date)) : undefined,
+        params.date ? sql`DATE(${transactions.date}) = ${params.date}` : undefined,
+        params.categoryId ? eq(transactions.categoryId, params.categoryId) : undefined,
         params.search ?
           or(
             ilike(transactions.merchantName, `%${params.search}%`),
@@ -96,7 +97,7 @@ export const transactionRepository = {
         eq(transactions.userId, user.sub),
         eq(transactions.typeId, typeId),
         params.statusId ? eq(transactions.statusId, Number(params.statusId)) : undefined,
-        params.date ? eq(transactions.date, new Date(params.date)) : undefined,
+        params.date ? sql`DATE(${transactions.date}) = ${params.date}` : undefined,
         params.search ?
           or(
             ilike(transactions.merchantName, `%${params.search}%`),

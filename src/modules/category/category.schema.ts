@@ -12,7 +12,15 @@ export const updateCategorySchema = z.object({
 })
 
 export const getCategorySchema = paginationSchema.extend({
-  type_ids: z.array(z.coerce.number()).optional()
+  type_ids: z.preprocess(
+    (val) => {
+      if (val === undefined) return undefined
+      if (Array.isArray(val)) return val
+      if (typeof val === 'string') return val.split(',')
+      return [val]
+    },
+    z.array(z.coerce.number()).optional()
+  )
 })
 
 export const getCategoryIdSchema = z.object({

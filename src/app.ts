@@ -24,6 +24,7 @@ export async function buildApp() {
   await app.register(cors, {
     // origin: env.NODE_ENV === 'production' ? false : true,
     origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   })
   await app.register(rateLimit, {
     max: 100,
