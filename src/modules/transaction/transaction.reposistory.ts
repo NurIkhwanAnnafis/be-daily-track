@@ -1,4 +1,4 @@
-import { and, count, eq, ilike, or, sql } from "drizzle-orm"
+import { and, count, eq, ilike, isNull, or, sql } from "drizzle-orm"
 import { db } from "../../shared/database"
 import { JwtPayload } from "../../shared/utils/jwt"
 import { transactions } from "../../shared/database/schema"
@@ -19,6 +19,7 @@ export const transactionRepository = {
             ilike(transactions.merchantName, `%${params.search}%`),
             ilike(transactions.description, `%${params.search}%`),
           ) : undefined,
+        isNull(transactions.deletedAt)
       ),
       limit: params.limit,
       offset: (params.page - 1) * params.limit,
@@ -64,7 +65,6 @@ export const transactionRepository = {
         amount: true,
         date: true,
         description: true,
-        statusId: true,
         createdAt: true,
         updatedAt: true,
       },

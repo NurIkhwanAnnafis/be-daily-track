@@ -35,6 +35,15 @@ export const expenseController = async (app: FastifyInstance) => {
         );
     });
 
+    protected_.get("/expenses/:id", async (request, reply) => {
+      const result = getTransactionIdSchema.safeParse(request.params)
+      if (!result.success) {
+        throw new AppError(result.error.issues[0].message, 400)
+      }
+      const expense = await expenseService.getExpenseById(result.data.id)
+      return reply.status(200).send(expense)
+    })
+
     // POST /expenses
     protected_.post("/expenses", async (request, reply) => {
       const result = createTransactionSchema.safeParse(request.body);

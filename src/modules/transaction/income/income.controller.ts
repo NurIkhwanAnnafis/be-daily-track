@@ -35,6 +35,15 @@ export const incomeController = async (app: FastifyInstance) => {
         );
     });
 
+    protected_.get("/incomes/:id", async (request, reply) => {
+      const result = getTransactionIdSchema.safeParse(request.params)
+      if (!result.success) {
+        throw new AppError(result.error.issues[0].message, 400)
+      }
+      const income = await incomeService.getIncomeById(result.data.id)
+      return reply.status(200).send(income)
+    })
+
     // POST /incomes
     protected_.post("/incomes", async (request, reply) => {
       const result = createTransactionSchema.safeParse(request.body);

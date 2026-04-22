@@ -22,6 +22,17 @@ export const expenseService = {
     return { data, meta: { total, page: params.page, limit: params.limit } }
   },
 
+  async getExpenseById(id: string) {
+    const expense = await transactionRepository.findById(id)
+    if (!expense) {
+      throw new AppError("Expense not found", 404)
+    }
+    return {
+      ...keysToSnakeCase(expense),
+      amount: Number(expense.amount),
+    }
+  },
+
   async createExpense(data: CreateTransactionInput, user: JwtPayload) {
     if (!isValidFormatDate(data.date)) {
       throw new AppError("Invalid date format", 400);

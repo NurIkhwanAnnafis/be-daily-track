@@ -23,6 +23,17 @@ export const incomeService = {
     return { data, meta: { total, page: params.page, limit: params.limit } }
   },
 
+  async getIncomeById(id: string) {
+    const income = await transactionRepository.findById(id)
+    if (!income) {
+      throw new AppError("Income not found", 404)
+    }
+    return {
+      ...keysToSnakeCase(income),
+      amount: Number(income.amount),
+    }
+  },
+
   async createIncome(data: CreateTransactionInput, user: JwtPayload) {
     if (!isValidFormatDate(data.date)) {
       throw new AppError("Invalid date format", 400)
