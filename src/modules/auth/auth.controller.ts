@@ -22,7 +22,7 @@ export async function authController(app: FastifyInstance) {
       throw new AppError(result.error.issues[0].message, 400)
     }
 
-    const tokens = await authService.refresh(result.data.refreshToken)
+    const tokens = await authService.refresh(result.data.refresh_token)
     return reply.status(200).send(successResponse(tokens, 'Token refreshed'))
   })
 
@@ -31,10 +31,10 @@ export async function authController(app: FastifyInstance) {
   }, async (req, reply) => {
     const result = refreshSchema.safeParse(req.body)
     if (!result.success) {
-      throw new AppError('refreshToken is required', 400)
+      throw new AppError('refresh_token is required', 400)
     }
 
-    await authService.logout(result.data.refreshToken)
+    await authService.logout(result.data.refresh_token)
     return reply.status(200).send(successResponse(null, 'Logged out successfully'))
   })
 }
