@@ -3,6 +3,7 @@ import { CreateUserInput, GetUsersInput } from './user.schema'
 import { userRepository } from './user.repository'
 import { SafeUser } from './user.types'
 import { AppError } from '../../shared/errors/app-error'
+import { keysToSnakeCase } from '../../shared/utils/object'
 
 export const userService = {
   async createUser(input: CreateUserInput): Promise<SafeUser> {
@@ -37,5 +38,14 @@ export const userService = {
     }
 
     return { data: result, meta }
+  },
+
+  async getUserById(id: string) {
+    const result = await userRepository.findById(id)
+    if (!result) {
+      throw new AppError('User not found', 404)
+    }
+
+    return keysToSnakeCase(result)
   }
 }

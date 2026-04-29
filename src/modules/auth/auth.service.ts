@@ -25,7 +25,11 @@ export const authService = {
     const expiresAt = new Date(decoded.exp * 1000)
     await authRepository.saveRefreshToken(user.id, refreshToken, expiresAt)
 
-    return { accessToken, refreshToken }
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      user_id: user.id
+    }
   },
 
   async refresh(token: string) {

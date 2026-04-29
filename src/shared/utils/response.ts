@@ -1,6 +1,5 @@
 export function successResponse<T>(data: T, message = 'Success') {
   return {
-    success: true,
     message,
     data,
   }
@@ -13,7 +12,6 @@ export function paginatedResponse<T>(
   limit: number
 ) {
   return {
-    success: true,
     data,
     meta: {
       total,
