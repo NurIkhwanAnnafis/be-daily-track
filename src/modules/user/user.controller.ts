@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify"
-import { createUserSchema, getUserByIdSchema, getUsersSchema } from "./user.schema"
+import { createUserSchema, getUserByIdSchema, getUsersSchema, updateUserSchema } from "./user.schema"
 import { userService } from "./user.service"
 import { paginatedResponse, successResponse } from "../../shared/utils/response"
 import { AppError } from "../../shared/errors/app-error"
@@ -28,6 +28,31 @@ export async function userController(app: FastifyInstance) {
 
       const user = await userService.createUser(result.data)
       return reply.status(201).send(successResponse(user, 'User created successfully'))
+    })
+
+    protected_.put('/users/:id', async (req, reply) => {
+      const reqParams = getUserByIdSchema.safeParse(req.params)
+      if (!reqParams.success) {
+        throw new AppError(reqParams.error.issues[0].message, 400)
+      }
+
+      const result = updateUserSchema.safeParse(req.body)
+      if (!result.success) {
+        throw new AppError(result.error.issues[0].message, 400)
+      }
+
+      const user = await userService.updateUser(req.user.sub, result.data)
+      return reply.status(200).send(successResponse(user, 'User updated successfully'))
+    })
+
+    protected_.delete('/users/:id', async (req, reply) => {
+      const result = getUserByIdSchema.safeParse(req.params)
+      if (!result.success) {
+        throw new AppError(result.error.issues[0].message, 400)
+      }
+
+      const user = await userService.deleteUser(result.data.id)
+      return reply.status(200).send(successResponse(user, 'User deleted successfully'))
     })
 
     protected_.get('/users/:id', async (req, reply) => {

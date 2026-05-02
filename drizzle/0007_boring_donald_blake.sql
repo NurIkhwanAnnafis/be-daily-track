@@ -1,0 +1,3 @@
+ALTER TABLE "users_config" ALTER COLUMN "config" SET DEFAULT '{"expense":{"limit_per_day":0,"limit_per_month":0},"income":{"limit_per_day":0,"limit_per_month":0},"initialAmount":{"config":{"name":"initial_amount","keyAsName":false,"notNull":true,"default":"0","hasDefault":true,"primaryKey":false,"isUnique":false,"dataType":"string","columnType":"PgNumeric"},"foreignKeyConfigs":[]}}'::jsonb;--> statement-breakpoint
+ALTER TABLE "users" ADD COLUMN "first_name" varchar(255);--> statement-breakpoint
+ALTER TABLE "users" ADD COLUMN "last_name" varchar(255);

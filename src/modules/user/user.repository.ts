@@ -1,9 +1,10 @@
 import { and, count, eq, ilike, isNull } from "drizzle-orm"
 import { db } from "../../shared/database"
 import { users } from "../../shared/database/schema"
-import { CreateUserInput, GetUsersInput } from "./user.schema"
+import { CreateUserInput, GetUsersInput, UpdateUserInput } from "./user.schema"
 
-export type CreateUserDbInput = Omit<CreateUserInput, 'password'> & { passwordHash: string }
+export type CreateUserDbInput = Omit<CreateUserInput, 'password'> & { password_hash: string }
+export type UpdateUserDbInput = Omit<UpdateUserInput, 'password' | 'confirm_password'> & { password_hash: string }
 
 export const userRepository = {
   findByEmail(email: string) {
@@ -19,13 +20,18 @@ export const userRepository = {
     return db.insert(users).values({
       email: input.email,
       organizationId: input.organization_id,
-      passwordHash: input.passwordHash
+      passwordHash: input.password_hash
     }).returning()
   },
 
-  update(id: string, data: CreateUserDbInput) {
+  update(id: string, data: UpdateUserDbInput) {
     return db.update(users).set({
-      ...data, updatedAt: new Date()
+      ...data,
+      firstName: data.first_name,
+      lastName: data.last_name,
+      email: data.email,
+      passwordHash: data.password_hash,
+      updatedAt: new Date()
     }).where(eq(users.id, id)).returning({ id: users.id })
   },
 
@@ -43,6 +49,8 @@ export const userRepository = {
       ),
       columns: {
         id: true,
+        firstName: true,
+        lastName: true,
         email: true,
         role: true,
         isActive: true,
@@ -71,6 +79,8 @@ export const userRepository = {
       ),
       columns: {
         id: true,
+        firstName: true,
+        lastName: true,
         email: true,
         role: true,
         isActive: true,

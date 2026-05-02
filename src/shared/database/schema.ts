@@ -32,6 +32,8 @@ export const organizations = pgTable('organizations', {
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
   email: varchar('email', { length: 255 }).notNull().unique(),
+  firstName: varchar('first_name', { length: 255 }),
+  lastName: varchar('last_name', { length: 255 }),
   passwordHash: text('password_hash').notNull(),
   role: userRoleEnum('role').notNull().default('member'),
   organizationId: uuid('organization_id').notNull().references(() => organizations.id),
@@ -55,7 +57,8 @@ export const usersConfig = pgTable('users_config', {
     income: {
       limit_per_day: 0,
       limit_per_month: 0,
-    }
+    },
+    initialAmount: decimal('initial_amount').notNull().default('0')
   })
 })
 
