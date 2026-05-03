@@ -11,9 +11,9 @@ export const transactionRepository = {
       where: and(
         eq(transactions.userId, user.sub),
         typeId ? eq(transactions.typeId, typeId) : undefined,
-        params.statusId ? eq(transactions.statusId, Number(params.statusId)) : undefined,
+        params.status_id ? eq(transactions.statusId, Number(params.status_id)) : undefined,
         params.date ? sql`DATE(${transactions.date}) = ${params.date}` : undefined,
-        params.categoryId ? eq(transactions.categoryId, params.categoryId) : undefined,
+        params.category_id ? eq(transactions.categoryId, params.category_id) : undefined,
         params.search ?
           or(
             ilike(transactions.merchantName, `%${params.search}%`),
@@ -98,9 +98,9 @@ export const transactionRepository = {
       .where(and(
         eq(transactions.userId, user.sub),
         typeId ? eq(transactions.typeId, typeId) : undefined,
-        params.statusId ? eq(transactions.statusId, Number(params.statusId)) : undefined,
+        params.status_id ? eq(transactions.statusId, Number(params.status_id)) : undefined,
         params.date ? sql`DATE(${transactions.date}) = ${params.date}` : undefined,
-        params.categoryId ? eq(transactions.categoryId, params.categoryId) : undefined,
+        params.category_id ? eq(transactions.categoryId, params.category_id) : undefined,
         params.search ?
           or(
             ilike(transactions.merchantName, `%${params.search}%`),

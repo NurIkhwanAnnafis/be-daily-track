@@ -2,9 +2,9 @@ import { z } from 'zod'
 import { paginationSchema } from '../../shared/module/schema'
 
 export const getTransactionSchema = paginationSchema.extend({
-  categoryId: z.string().optional(),
-  typeId: z.number().optional(),
-  statusId: z.number().optional(),
+  category_id: z.string().optional(),
+  type_id: z.number().optional(),
+  status_id: z.number().optional(),
   date: z.string().optional(),
 })
 
