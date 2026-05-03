@@ -6,11 +6,11 @@ import { TRANSACTION_STATUS } from "./transaction.constant"
 import { CreateTransactionInput, GetTransactionInput, UpdateTransactionInput } from "./transaction.schema"
 
 export const transactionRepository = {
-  find(params: GetTransactionInput, typeId: number, user: JwtPayload) {
+  find(params: GetTransactionInput, typeId: number | undefined, user: JwtPayload) {
     return db.query.transactions.findMany({
       where: and(
         eq(transactions.userId, user.sub),
-        eq(transactions.typeId, typeId),
+        typeId ? eq(transactions.typeId, typeId) : undefined,
         params.statusId ? eq(transactions.statusId, Number(params.statusId)) : undefined,
         params.date ? sql`DATE(${transactions.date}) = ${params.date}` : undefined,
         params.categoryId ? eq(transactions.categoryId, params.categoryId) : undefined,
@@ -91,13 +91,13 @@ export const transactionRepository = {
     })
   },
 
-  async count(params: GetTransactionInput, typeId: number, user: JwtPayload) {
+  async count(params: GetTransactionInput, typeId: number | undefined, user: JwtPayload) {
     const result = await db
       .select({ value: count() })
       .from(transactions)
       .where(and(
         eq(transactions.userId, user.sub),
-        eq(transactions.typeId, typeId),
+        typeId ? eq(transactions.typeId, typeId) : undefined,
         params.statusId ? eq(transactions.statusId, Number(params.statusId)) : undefined,
         params.date ? sql`DATE(${transactions.date}) = ${params.date}` : undefined,
         params.categoryId ? eq(transactions.categoryId, params.categoryId) : undefined,
