@@ -3,7 +3,7 @@ import { authMiddleware } from "../../shared/middleware/auth.middleware";
 import { getTransactionSchema } from "./transaction.schema";
 import { AppError } from "../../shared/errors/app-error";
 import { TransactionService } from "./transaction.service";
-import { paginatedResponse } from "../../shared/utils/response";
+import { paginatedResponse, successResponse } from "../../shared/utils/response";
 
 export async function transactionController(app: FastifyInstance) {
   await app.register(async (protected_) => {
@@ -24,6 +24,16 @@ export async function transactionController(app: FastifyInstance) {
           transactions.pagination.limit
         )
       )
+    })
+
+    protected_.get("/transactions/summary", async (request, reply) => {
+      const result = getTransactionSchema.safeParse(request.query)
+      if (!result.success) {
+        throw new AppError(result.error.issues[0].message, 400)
+      }
+      const transactions = await TransactionService.getTransactionSummary(result.data, request.user)
+
+      return reply.status(200).send(successResponse(transactions, "Transaction summary retrieved successfully"))
     })
   })
 }

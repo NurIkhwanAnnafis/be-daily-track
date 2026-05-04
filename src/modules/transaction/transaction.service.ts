@@ -2,6 +2,7 @@ import { JwtPayload } from "../../shared/utils/jwt";
 import { keysToSnakeCase } from "../../shared/utils/object";
 import { transactionRepository } from "./transaction.reposistory";
 import { GetTransactionInput } from "./transaction.schema";
+import { transactionUtils } from "./transaction.util";
 
 export const TransactionService = {
   async getTransaction(params: GetTransactionInput, user: JwtPayload) {
@@ -19,5 +20,12 @@ export const TransactionService = {
         totalPage: Math.ceil(count / params.limit)
       }
     }
+  },
+
+  async getTransactionSummary(params: GetTransactionInput, user: JwtPayload) {
+    const transaction = await transactionRepository.find(params, undefined, user)
+    const result = transactionUtils.calculateTransactionSummary(transaction)
+
+    return keysToSnakeCase(result)
   }
 }

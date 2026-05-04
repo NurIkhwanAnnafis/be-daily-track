@@ -6,6 +6,8 @@ export const getTransactionSchema = paginationSchema.extend({
   type_id: z.number().optional(),
   status_id: z.number().optional(),
   date: z.string().optional(),
+  start_date: z.string().optional(),
+  end_date: z.string().optional(),
 })
 
 export const createTransactionSchema = z.object({

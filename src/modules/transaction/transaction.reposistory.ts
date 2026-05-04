@@ -12,6 +12,8 @@ export const transactionRepository = {
         eq(transactions.userId, user.sub),
         typeId ? eq(transactions.typeId, typeId) : undefined,
         params.status_id ? eq(transactions.statusId, Number(params.status_id)) : undefined,
+        params.start_date ? sql`DATE(${transactions.date}) >= ${params.start_date}` : undefined,
+        params.end_date ? sql`DATE(${transactions.date}) <= ${params.end_date}` : undefined,
         params.date ? sql`DATE(${transactions.date}) = ${params.date}` : undefined,
         params.category_id ? eq(transactions.categoryId, params.category_id) : undefined,
         params.search ?
@@ -99,6 +101,8 @@ export const transactionRepository = {
         eq(transactions.userId, user.sub),
         typeId ? eq(transactions.typeId, typeId) : undefined,
         params.status_id ? eq(transactions.statusId, Number(params.status_id)) : undefined,
+        params.start_date ? sql`DATE(${transactions.date}) >= ${params.start_date}` : undefined,
+        params.end_date ? sql`DATE(${transactions.date}) <= ${params.end_date}` : undefined,
         params.date ? sql`DATE(${transactions.date}) = ${params.date}` : undefined,
         params.category_id ? eq(transactions.categoryId, params.category_id) : undefined,
         params.search ?
