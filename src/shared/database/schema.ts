@@ -58,7 +58,10 @@ export const usersConfig = pgTable('users_config', {
       limit_per_day: 0,
       limit_per_month: 0,
     },
-    initialAmount: decimal('initial_amount').notNull().default('0')
+    initialAmount: decimal('initial_amount').notNull().default('0'),
+    currentAmount: decimal('current_amount').notNull().default('0'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }),
   })
 })
 

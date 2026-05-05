@@ -8,7 +8,11 @@ export const userConfigRepository = {
     const [result] = await db.insert(usersConfig)
     .values({
       userId: userId,
-      config: input
+      config: {
+        ...input,
+        createdAt: new Date(),
+        updatedAt: null,
+      }
     })
     .returning()
 
@@ -18,7 +22,11 @@ export const userConfigRepository = {
   async update(userId: string, input: UpdateConfigInput) {
     const [result] = await db.update(usersConfig)
     .set({
-      config: input
+      config: {
+        ...usersConfig.config,
+        ...input,
+        updatedAt: new Date(),
+      },
     })
     .where(eq(usersConfig.userId, userId))
     .returning()

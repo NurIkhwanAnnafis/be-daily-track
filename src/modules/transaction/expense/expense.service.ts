@@ -7,6 +7,7 @@ import { AppError } from "../../../shared/errors/app-error"
 import { categoryRepository } from "../../category/category.repository"
 import { keysToSnakeCase } from "../../../shared/utils/object"
 import { statusRepository } from "../status/status.repository"
+import { UserConfig } from "../transaction.type"
 
 export const expenseService = {
   async getExpenses(params: GetTransactionInput, user: JwtPayload) {
@@ -47,11 +48,18 @@ export const expenseService = {
       throw new AppError("Category type is not expense", 400)
     }
 
+    const config = await transactionRepository.findConfigUser(user)
+    if (config) {
+      const userConfig = config.config as UserConfig
+      const currentAmount = BigInt(userConfig?.currentAmount ?? '0') - BigInt(data.amount)
+      await transactionRepository.updateCurrentAmount(user.sub, currentAmount)
+    }
+
     const expense = await transactionRepository.create(data, TRANSACTION_TYPE.EXPENSE, user)
     return keysToSnakeCase(expense[0])
   },
 
-  async updateExpense(id: string, data: UpdateTransactionInput) {
+  async updateExpense(id: string, data: UpdateTransactionInput, user: JwtPayload) {
     const expenseExist = await transactionRepository.findById(id)
     if (!expenseExist) {
       throw new AppError("Expense not found", 404)
@@ -68,6 +76,15 @@ export const expenseService = {
 
     if (!category.categoryTypes.find(t => t.typeId === TRANSACTION_TYPE.EXPENSE)) {
       throw new AppError("Category type is not expense", 400)
+    }
+
+    if (BigInt(expenseExist.amount) !== BigInt(data.amount)) {
+      const config = await transactionRepository.findConfigUser(user)
+      if (config) {
+        const userConfig = config.config as UserConfig
+        const currentAmount = BigInt(userConfig?.currentAmount ?? '0') + BigInt(expenseExist.amount) - BigInt(data.amount)
+        await transactionRepository.updateCurrentAmount(user.sub, currentAmount)
+      }
     }
 
     const expense = await transactionRepository.update(id, data)
@@ -89,10 +106,17 @@ export const expenseService = {
     return keysToSnakeCase(expense[0])
   },
 
-  async deleteExpense(id: string) {
+  async deleteExpense(id: string, user: JwtPayload) {
     const expenseExist = await transactionRepository.findById(id)
     if (!expenseExist) {
       throw new AppError("Expense not found", 404)
+    }
+
+    const config = await transactionRepository.findConfigUser(user)
+    if (config) {
+      const userConfig = config.config as UserConfig
+      const currentAmount = BigInt(userConfig?.currentAmount ?? '0') + BigInt(expenseExist.amount)
+      await transactionRepository.updateCurrentAmount(user.sub, currentAmount)
     }
 
     const expense = await transactionRepository.delete(id)

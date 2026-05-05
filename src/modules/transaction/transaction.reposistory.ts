@@ -1,7 +1,7 @@
 import { and, count, eq, ilike, isNull, or, sql } from "drizzle-orm"
 import { db } from "../../shared/database"
 import { JwtPayload } from "../../shared/utils/jwt"
-import { transactions } from "../../shared/database/schema"
+import { transactions, usersConfig } from "../../shared/database/schema"
 import { TRANSACTION_STATUS } from "./transaction.constant"
 import { CreateTransactionInput, GetTransactionInput, UpdateTransactionInput } from "./transaction.schema"
 
@@ -151,5 +151,21 @@ export const transactionRepository = {
 
   delete(id: string) {
     return db.update(transactions).set({ updatedAt: new Date(), deletedAt: new Date() }).where(eq(transactions.id, id))
+  },
+
+  findConfigUser(user: JwtPayload) {
+    return db.query.usersConfig.findFirst({
+      where: eq(usersConfig.userId, user.sub),
+    })
+  },
+
+  updateCurrentAmount(userId: string, currentAmount: bigint) {
+    return db.update(usersConfig).set({
+      config: {
+        ...usersConfig.config,
+        currentAmount: currentAmount.toString(), // BigInt is not JSON-serializable
+        updatedAt: new Date().toISOString(),
+      },
+    }).where(eq(usersConfig.userId, userId)).returning({ id: usersConfig.id })
   }
 }

@@ -57,6 +57,13 @@
       "when": 1777679109424,
       "tag": "0007_boring_donald_blake",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1777940430167,
+      "tag": "0008_cloudy_wolf_cub",
+      "breakpoints": true
     }
   ]
 }

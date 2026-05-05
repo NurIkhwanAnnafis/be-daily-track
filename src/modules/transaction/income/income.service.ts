@@ -7,6 +7,7 @@ import { AppError } from "../../../shared/errors/app-error"
 import { isValidFormatDate } from "../../../shared/utils/date"
 import { categoryRepository } from "../../category/category.repository"
 import { statusRepository } from "../status/status.repository"
+import { UserConfig } from "../transaction.type"
 
 export const incomeService = {
   async getIncomes(params: GetTransactionInput, user: JwtPayload) {
@@ -48,11 +49,18 @@ export const incomeService = {
       throw new AppError("Category type is not income", 400)
     }
 
+    const config = await transactionRepository.findConfigUser(user)
+    if (config) {
+      const userConfig = config.config as UserConfig
+      const currentAmount = BigInt(userConfig?.currentAmount ?? '0') + BigInt(data.amount)
+      await transactionRepository.updateCurrentAmount(user.sub, currentAmount)
+    }
+
     const income = await transactionRepository.create(data, TRANSACTION_TYPE.INCOME, user)
     return keysToSnakeCase(income[0])
   },
 
-  async updateIncome(id: string, data: UpdateTransactionInput) {
+  async updateIncome(id: string, data: UpdateTransactionInput, user: JwtPayload) {
     const incomeExist = await transactionRepository.findById(id)
     if (!incomeExist) {
       throw new AppError("Income not found", 404)
@@ -69,6 +77,15 @@ export const incomeService = {
 
     if (!category.categoryTypes.find(t => t.typeId === TRANSACTION_TYPE.INCOME)) {
       throw new AppError("Category type is not income", 400)
+    }
+
+    if (BigInt(incomeExist.amount) !== BigInt(data.amount)) {
+      const config = await transactionRepository.findConfigUser(user)
+      if (config) {
+        const userConfig = config.config as UserConfig
+        const currentAmount = BigInt(userConfig?.currentAmount ?? '0') - BigInt(incomeExist.amount) + BigInt(data.amount)
+        await transactionRepository.updateCurrentAmount(user.sub, currentAmount)
+      }
     }
 
     const income = await transactionRepository.update(id, data)
@@ -90,10 +107,17 @@ export const incomeService = {
     return keysToSnakeCase(income[0])
   },
 
-  async deleteIncome(id: string) {
+  async deleteIncome(id: string, user: JwtPayload) {
     const incomeExist = await transactionRepository.findById(id)
     if (!incomeExist) {
       throw new AppError("Income not found", 404)
+    }
+
+    const config = await transactionRepository.findConfigUser(user)
+    if (config) {
+      const userConfig = config.config as UserConfig
+      const currentAmount = BigInt(userConfig?.currentAmount ?? '0') - BigInt(incomeExist.amount)
+      await transactionRepository.updateCurrentAmount(user.sub, currentAmount)
     }
 
     const income = await transactionRepository.delete(id)

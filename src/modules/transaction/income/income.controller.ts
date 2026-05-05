@@ -65,7 +65,7 @@ export const incomeController = async (app: FastifyInstance) => {
         throw new AppError(result.error.issues[0].message, 400)
       }
 
-      const income = await incomeService.updateIncome(paramsResult.data.id, result.data)
+      const income = await incomeService.updateIncome(paramsResult.data.id, result.data, request.user)
       return reply.status(200).send(income)
     })
 
@@ -90,7 +90,7 @@ export const incomeController = async (app: FastifyInstance) => {
         if (!result.success) {
           throw new AppError(result.error.issues[0].message, 400);
         }
-        await incomeService.deleteIncome(result.data.id);
+        await incomeService.deleteIncome(result.data.id, request.user);
         return reply.status(200).send({ message: "Income deleted" });
       }
     );
