@@ -13,7 +13,7 @@ export const TransactionService = {
     ])
 
     return {
-      data: keysToSnakeCase(transaction),
+      data: transaction.map(x => ({ ...keysToSnakeCase(x), amount: Number(x.amount) })),
       pagination: {
         total: count,
         page: params.page,
