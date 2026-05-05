@@ -2,6 +2,7 @@ import { JwtPayload } from "../../shared/utils/jwt";
 import { keysToSnakeCase } from "../../shared/utils/object";
 import { transactionRepository } from "./transaction.reposistory";
 import { GetTransactionInput } from "./transaction.schema";
+import { UserConfig } from "./transaction.type";
 import { transactionUtils } from "./transaction.util";
 
 export const TransactionService = {
@@ -26,6 +27,12 @@ export const TransactionService = {
     const transaction = await transactionRepository.find(params, undefined, user)
     const result = transactionUtils.calculateTransactionSummary(transaction)
 
-    return keysToSnakeCase(result)
+    const userConfig = await transactionRepository.findConfigUser(user)
+    const config = userConfig?.config as UserConfig | undefined
+
+    return {
+      ...keysToSnakeCase(result),
+      balance: Number(config?.currentAmount || 0)
+    }
   }
 }
