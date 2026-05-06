@@ -57,7 +57,13 @@ export const dashboardService = {
     const result: Array<{ name: string, total: number }> = []
 
     transaction.forEach(item => {
-      result.push({ name: item.category.name, total: Number(item.amount) })
+      const existingCategory = result.find(res => res.name === item.category.name)
+
+      if (existingCategory) {
+        existingCategory.total += Number(item.amount)
+      } else {
+        result.push({ name: item.category.name, total: Number(item.amount) })
+      }
     })
 
     return result.sort((a, b) => b.total - a.total)
@@ -82,7 +88,13 @@ export const dashboardService = {
     const result: Array<{ name: string, total: number }> = []
 
     transaction.forEach(item => {
-      result.push({ name: item.category.name, total: Number(item.amount) })
+      const existingCategory = result.find(res => res.name === item.category.name)
+
+      if (existingCategory) {
+        existingCategory.total += Number(item.amount)
+      } else {
+        result.push({ name: item.category.name, total: Number(item.amount) })
+      }
     })
 
     return result.sort((a, b) => b.total - a.total)
