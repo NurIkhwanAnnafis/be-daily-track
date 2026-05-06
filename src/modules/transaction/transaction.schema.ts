@@ -40,6 +40,7 @@ export const getTransactionIdSchema = z.object({
 })
 
 export type GetTransactionInput = z.infer<typeof getTransactionSchema>
+export type FindTransactionParams = Omit<GetTransactionInput, 'page' | 'limit'> & { page?: number; limit?: number }
 export type CreateTransactionInput = z.infer<typeof createTransactionSchema>
 export type UpdateTransactionInput = z.infer<typeof updateTransactionSchema>
 export type UpdateStatusTransactionInput = z.infer<typeof updateStatusTransactionSchema>

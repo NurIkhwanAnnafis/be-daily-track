@@ -3,10 +3,10 @@ import { db } from "../../shared/database"
 import { JwtPayload } from "../../shared/utils/jwt"
 import { transactions, usersConfig } from "../../shared/database/schema"
 import { TRANSACTION_STATUS } from "./transaction.constant"
-import { CreateTransactionInput, GetTransactionInput, UpdateTransactionInput } from "./transaction.schema"
+import { CreateTransactionInput, FindTransactionParams, GetTransactionInput, UpdateTransactionInput } from "./transaction.schema"
 
 export const transactionRepository = {
-  find(params: GetTransactionInput, typeId: number | undefined, user: JwtPayload) {
+  find(params: FindTransactionParams, typeId: number | undefined, user: JwtPayload) {
     return db.query.transactions.findMany({
       where: and(
         eq(transactions.userId, user.sub),
@@ -23,8 +23,10 @@ export const transactionRepository = {
           ) : undefined,
         isNull(transactions.deletedAt)
       ),
-      limit: params.limit,
-      offset: (params.page - 1) * params.limit,
+      ...(params.limit && params.page ? {
+        limit: params.limit,
+        offset: (params.page - 1) * params.limit,
+      } : {}),
       orderBy: (table, { desc }) => [desc(table.createdAt)],
       columns: {
         id: true,

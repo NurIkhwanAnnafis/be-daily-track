@@ -24,7 +24,9 @@ export const TransactionService = {
   },
 
   async getTransactionSummary(params: GetTransactionInput, user: JwtPayload) {
-    const transaction = await transactionRepository.find(params, undefined, user)
+    const { page, limit, ...currentParams } = params
+
+    const transaction = await transactionRepository.find(currentParams, undefined, user)
     const result = transactionUtils.calculateTransactionSummary(transaction)
 
     const userConfig = await transactionRepository.findConfigUser(user)
