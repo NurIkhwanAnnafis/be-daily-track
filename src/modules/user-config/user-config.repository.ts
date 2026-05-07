@@ -2,6 +2,7 @@ import { db } from "../../shared/database"
 import { usersConfig } from "../../shared/database/schema"
 import { eq } from "drizzle-orm"
 import { CreateConfigInput, UpdateConfigInput } from "./user-config.schema"
+import { UserConfig } from "./user-config.type"
 
 export const userConfigRepository = {
   async create(userId: string, input: CreateConfigInput) {
@@ -10,23 +11,24 @@ export const userConfigRepository = {
       userId: userId,
       config: {
         ...input,
-        createdAt: new Date(),
-        updatedAt: null,
-      }
+        currentAmount: input.initial_amount,
+      },
+      createdAt: new Date(),
+      updatedAt: null,
     })
     .returning()
 
     return result
   },
 
-  async update(userId: string, input: UpdateConfigInput) {
+  async update(userId: string, input: UpdateConfigInput, existingConfig: UserConfig) {
     const [result] = await db.update(usersConfig)
     .set({
       config: {
-        ...usersConfig.config,
+        ...existingConfig,
         ...input,
-        updatedAt: new Date(),
       },
+      updatedAt: new Date(),
     })
     .where(eq(usersConfig.userId, userId))
     .returning()

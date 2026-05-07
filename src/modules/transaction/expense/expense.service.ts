@@ -52,7 +52,7 @@ export const expenseService = {
     if (config) {
       const userConfig = config.config as UserConfig
       const currentAmount = BigInt(userConfig?.currentAmount ?? '0') - BigInt(data.amount)
-      await transactionRepository.updateCurrentAmount(user.sub, currentAmount)
+      await transactionRepository.updateCurrentAmount(user.sub, currentAmount, userConfig)
     }
 
     const expense = await transactionRepository.create(data, TRANSACTION_TYPE.EXPENSE, user)
@@ -83,7 +83,7 @@ export const expenseService = {
       if (config) {
         const userConfig = config.config as UserConfig
         const currentAmount = BigInt(userConfig?.currentAmount ?? '0') + BigInt(expenseExist.amount) - BigInt(data.amount)
-        await transactionRepository.updateCurrentAmount(user.sub, currentAmount)
+        await transactionRepository.updateCurrentAmount(user.sub, currentAmount, userConfig)
       }
     }
 
@@ -116,7 +116,7 @@ export const expenseService = {
     if (config) {
       const userConfig = config.config as UserConfig
       const currentAmount = BigInt(userConfig?.currentAmount ?? '0') + BigInt(expenseExist.amount)
-      await transactionRepository.updateCurrentAmount(user.sub, currentAmount)
+      await transactionRepository.updateCurrentAmount(user.sub, currentAmount, userConfig)
     }
 
     const expense = await transactionRepository.delete(id)

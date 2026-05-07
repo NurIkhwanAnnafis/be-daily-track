@@ -50,19 +50,15 @@ export const usersConfig = pgTable('users_config', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   config: jsonb('config').notNull().default({
-    expense: {
-      limit_per_day: 0,
-      limit_per_month: 0,
-    },
-    income: {
-      limit_per_day: 0,
-      limit_per_month: 0,
-    },
-    initialAmount: decimal('initial_amount').notNull().default('0'),
-    currentAmount: decimal('current_amount').notNull().default('0'),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp('updated_at', { withTimezone: true }),
-  })
+    expense_limit_per_day: decimal('expense_limit_per_day').notNull().default('0'),
+    expense_limit_per_month: decimal('expense_limit_per_month').notNull().default('0'),
+    income_limit_per_day: decimal('income_limit_per_day').notNull().default('0'),
+    income_limit_per_month: decimal('income_limit_per_month').notNull().default('0'),
+    initial_amount: decimal('initial_amount').notNull().default('0'),
+    current_amount: decimal('current_amount').notNull().default('0'),
+  }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }),
 })
 
 export const refreshTokens = pgTable('refresh_tokens', {

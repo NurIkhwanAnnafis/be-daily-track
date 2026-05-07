@@ -4,6 +4,7 @@ import { JwtPayload } from "../../shared/utils/jwt"
 import { transactions, usersConfig } from "../../shared/database/schema"
 import { TRANSACTION_STATUS } from "./transaction.constant"
 import { CreateTransactionInput, FindTransactionParams, GetTransactionInput, UpdateTransactionInput } from "./transaction.schema"
+import { UserConfig } from "./transaction.type"
 
 export const transactionRepository = {
   find(params: FindTransactionParams, typeId: number | undefined, user: JwtPayload) {
@@ -161,13 +162,13 @@ export const transactionRepository = {
     })
   },
 
-  updateCurrentAmount(userId: string, currentAmount: bigint) {
+  updateCurrentAmount(userId: string, currentAmount: bigint, existingConfig: UserConfig = {}) {
     return db.update(usersConfig).set({
       config: {
-        ...usersConfig.config,
-        currentAmount: currentAmount.toString(), // BigInt is not JSON-serializable
-        updatedAt: new Date().toISOString(),
+        ...existingConfig,
+        current_amount: Number(currentAmount),
       },
+      updatedAt: new Date(),
     }).where(eq(usersConfig.userId, userId)).returning({ id: usersConfig.id })
   }
 }

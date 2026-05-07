@@ -5,11 +5,11 @@ export const getConfigByUserIdSchema = z.object({
 })
 
 export const createConfigSchema = z.object({
-  initialAmount: z.number().default(0),
-  expenseLimitPerDay: z.number().default(0),
-  expenseLimitPerMonth: z.number().default(0),
-  incomeLimitPerDay: z.number().default(0),
-  incomeLimitPerMonth: z.number().default(0)
+  initial_amount: z.number().default(0),
+  expense_limit_per_day: z.number().default(0),
+  expense_limit_per_month: z.number().default(0),
+  income_limit_per_day: z.number().default(0),
+  income_limit_per_month: z.number().default(0)
 })
 
 export type GetConfigByUserIdInput = z.infer<typeof getConfigByUserIdSchema>
