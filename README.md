@@ -2,6 +2,19 @@
 
 A backend service built with **Fastify**, **Drizzle ORM**, and **PostgreSQL** — designed for a SaaS application with authentication, transaction management, and reporting features.
 
+## About
+
+This project is a personal learning exercise to explore building a production-grade REST API using modern Node.js tooling. It covers common real-world backend concerns such as authentication, financial transaction tracking, category management, and per-user configuration.
+
+### Key Features
+
+- 🔐 **Authentication** — JWT-based login with access & refresh token strategy
+- 🏢 **Organization** — Multi-organization support for user grouping
+- 💸 **Transactions** — Income and expense tracking with category classification
+- 📂 **Categories** — Flexible category and category-type management
+- 📊 **Dashboard** — Aggregated financial summary and reporting
+- ⚙️ **User Config** — Per-user configuration stored as JSON
+
 ## Tech Stack
 
 - **Runtime**: Node.js >= 20
@@ -74,14 +87,4 @@ npm run db:studio
 
 ```bash
 docker-compose up
-```
-
-## Testing
-
-```bash
-# Run tests
-npm run test
-
-# Watch mode
-npm run test:watch
 ```
